@@ -19,10 +19,6 @@ FSJS project 2 - List Filter and Pagination
 const studentList = document.querySelector('.student-list').children;
 const numberOfItemsToShow = 10;
 
-console.log(studentList);
-
-
-
 /*** 
    Create the `showPage` function to hide all of the items in the 
    list except for the ten you want to show.
@@ -41,11 +37,11 @@ const showPage = (list, page) => {
   const startIndex = startIndexValue(page);
   const endIndex = endIndexValue(page);
 
-  for (let i = 0; i < studentList.length; i += 1) {
+  for (let i = 0; i < list.length; i += 1) {
     if (i >= startIndex && i < endIndex) {
-      studentList[i].style.display = "";
+      list[i].style.display = "";
     } else {
-      studentList[i].style.display = "none";
+      list[i].style.display = "none";
     }
   }
 }
@@ -64,6 +60,48 @@ function setActiveClass(link) {
   link.className = 'active';
 }
 
+function searchList(value) {
+  for (let i = 0; i < studentList.length; i += 1) {
+    const li = studentList[i];
+    li.style.display = '';
+    li.classList.remove('match');
+
+    const name = li.querySelector('h3').textContent;
+
+    if (name.includes(value.toLowerCase())) {
+      li.classList.add("match");
+    } else {
+      li.style.display = "none"; 
+    }
+  }
+
+  showSearchResultItems();
+}
+
+function showSearchResultItems() {
+  const results = document.querySelectorAll('.student-list .match');
+  const pageDiv = document.querySelector('.page');
+  const pagination = document.querySelector('.pagination');
+  if (pagination) {
+  pageDiv.removeChild(pagination);
+  }
+  const p = document.querySelector('.page p');
+  if (p) {
+    pageDiv.removeChild(p);
+  }
+  if (results.length > 0) {
+    
+    
+    showPage(results, 1);
+    appendPageLinks(results);
+    console.log(results.length);
+  }
+  else {
+    const noResultsP = document.createElement('p');
+    noResultsP.textContent = 'No results.'
+    pageDiv.appendChild(noResultsP);
+  }
+}
 
 
 /*** 
@@ -71,7 +109,7 @@ function setActiveClass(link) {
    functionality to the pagination buttons.
 ***/
 const appendPageLinks = (list) => {
-  const numberOfPages = Math.ceil(studentList.length / numberOfItemsToShow);
+  const numberOfPages = Math.ceil(list.length / numberOfItemsToShow);
   const pageDiv = document.querySelector('.page');
   const div = document.createElement('div');
   div.className = 'pagination';
@@ -91,7 +129,7 @@ const appendPageLinks = (list) => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
       const page = parseInt(e.target.textContent);
-      showPage(studentList, page);
+      showPage(list, page);
       console.log("show page: " + page);
       setActiveClass(e.target);
     });
@@ -100,9 +138,40 @@ const appendPageLinks = (list) => {
   }
 }
 
+const appendSearchInput = () => {
+  const pageHead = document.querySelector('.page-header');
+  const searchDiv = document.createElement('div');
+  searchDiv.className = 'student-search';
+  pageHead.appendChild(searchDiv);
+
+  const input = document.createElement('input');
+  input.placeholder = 'Search for students...';
+  searchDiv.appendChild(input);
+
+  const button = document.createElement('button');
+  button.textContent = 'Search';
+  searchDiv.appendChild(button);
+
+  button.addEventListener('click', () => {
+    const searchValue = input.value;
+    input.value = '';
+    
+    searchList(searchValue);
+  });
+
+  input.addEventListener('keyup', () => {
+    searchList(input.value);
+  });
+
+}
+
+
+
+
+
 showPage(studentList, 1);
 appendPageLinks(studentList);
-
+appendSearchInput();
 
 
 
