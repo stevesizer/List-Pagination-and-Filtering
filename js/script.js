@@ -6,32 +6,13 @@ FSJS project 2 - List Filter and Pagination
 // Study guide for this project - https://drive.google.com/file/d/1OD1diUsTMdpfMDv677TfL1xO2CEkykSz/view?usp=sharing
 
 
-/*** 
-   Add your global variables that store the DOM elements you will 
-   need to reference and/or manipulate. 
-   
-   But be mindful of which variables should be global and which 
-   should be locally scoped to one of the two main functions you're 
-   going to create. A good general rule of thumb is if the variable 
-   will only be used inside of a function, then it can be locally 
-   scoped to that function.
-***/
+
 const studentList = document.querySelector('.student-list').children;
 const numberOfItemsToShow = 10;
 
 /*** 
-   Create the `showPage` function to hide all of the items in the 
-   list except for the ten you want to show.
-
-   Pro Tips: 
-     - Keep in mind that with a list of 54 students, the last page 
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when 
-       you initially define the function, and it acts as a variable 
-       or a placeholder to represent the actual function `argument` 
-       that will be passed into the parens later when you call or 
-       "invoke" the function 
+   Shows the results based on the paged result we are on and the list.
+   If the indexes dont match they are hidden from the user.
 ***/
 const showPage = (list, page) => {
   const startIndex = startIndexValue(page);
@@ -46,20 +27,27 @@ const showPage = (list, page) => {
   }
 }
 
+// gets the start index value based on page number
 function startIndexValue(page) {
   return (page * numberOfItemsToShow) - numberOfItemsToShow;
 }
 
+// gets the end index value based on page number.
 function endIndexValue(page) {
   return page * numberOfItemsToShow;
 }
 
+// Sets the active state of the clicked pagination link.
 function setActiveClass(link) {
   oldActiveLink = document.querySelector('.pagination .active');
   oldActiveLink.className = '';
   link.className = 'active';
 }
 
+/***
+  Searches the list of users and marks the ones that include the 
+  search value as a match. We can then generate a sub list from the match class.
+***/
 function searchList(value) {
   for (let i = 0; i < studentList.length; i += 1) {
     const li = studentList[i];
@@ -78,6 +66,11 @@ function searchList(value) {
   showSearchResultItems();
 }
 
+/***
+  Gets the new list of results from the serach input result and displays these. If 
+  there are no results a message will appear saying 'No results'. It also updates 
+  the pagination
+***/
 function showSearchResultItems() {
   const results = document.querySelectorAll('.student-list .match');
   const pageDiv = document.querySelector('.page');
@@ -90,8 +83,6 @@ function showSearchResultItems() {
     pageDiv.removeChild(p);
   }
   if (results.length > 0) {
-    
-    
     showPage(results, 1);
     appendPageLinks(results);
     console.log(results.length);
@@ -105,8 +96,8 @@ function showSearchResultItems() {
 
 
 /*** 
-   Create the `appendPageLinks function` to generate, append, and add 
-   functionality to the pagination buttons.
+   Adds the pagination links to the bottom of the page with a event listener
+   to caputure button click, to change the paged results.
 ***/
 const appendPageLinks = (list) => {
   const numberOfPages = Math.ceil(list.length / numberOfItemsToShow);
@@ -138,6 +129,11 @@ const appendPageLinks = (list) => {
   }
 }
 
+/***
+  Adds a search input and button to the page. This has two event listeners an
+  on click for the button and keyup for the input. This will then update the results
+  based on user input.
+***/
 const appendSearchInput = () => {
   const pageHead = document.querySelector('.page-header');
   const searchDiv = document.createElement('div');
@@ -165,10 +161,9 @@ const appendSearchInput = () => {
 
 }
 
-
-
-
-
+/***
+  Calls the functions initially to get the party started.
+***/
 showPage(studentList, 1);
 appendPageLinks(studentList);
 appendSearchInput();
